@@ -159,6 +159,7 @@ def run_main(aws_region, instance_type, vpc_id, user_at_ami_id_list, default_use
         else:
             user = default_user
             ami_id = user_and_ami_id[0]
+            logger.info("user@ami: {0}@{1}".format(user,ami_id))
         environment.run_instances(ami_id=ami_id, user=user, instance_type=instance_type)
 
     environment.wait_for_instances("running")
@@ -179,7 +180,7 @@ def run_main(aws_region, instance_type, vpc_id, user_at_ami_id_list, default_use
     env.connection_attempts = 50
     env.timeout = 10
 
-    instance_for_host = dict((instance.ip_address, instance) for instance in environment.instances)
+    instance_for_host = dict((instance.user + "@" + instance.ip_address, instance) for instance in environment.instances)
     host_list = [instance.user + "@" + instance.ip_address for instance in environment.instances]
     result_list = execute(get_provides_list, hosts=host_list)
     for host, provides_list in result_list.items():
